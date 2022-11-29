@@ -30,6 +30,17 @@ type Worker struct { //Name?
 	Operator Opfunc
 }
 
+// ----------------------------------------------------------------------------
+func (worker Worker) GetReadStream(context.Context) (<-chan Commitable, error) {
+	return worker.In
+}
+
+// ----------------------------------------------------------------------------
+func (worker Worker) GetWriteStream(context.Context) (chan<- Commitable, error) {
+	return worker.Out
+}
+
+// ----------------------------------------------------------------------------
 // no-op operator
 func noopOperator(worker *Worker, ctx context.Context) (bool, error) {
 	var c Commitable = <-worker.In
@@ -37,6 +48,7 @@ func noopOperator(worker *Worker, ctx context.Context) (bool, error) {
 	return true, nil
 }
 
+// ----------------------------------------------------------------------------
 func doSomething() {
 	w := &Worker{
 		In:       make(chan Commitable),

@@ -11,13 +11,41 @@ import (
 
 type FileStream struct {
 	filename string
-	record   szrecord.Record
+	readStream    chan Commitable
+	writeStream   chan Commitable
 }
 
-func (s FileStream) GetReadStream(ctx context.Context) (<-chan Commitable, error) {
-	return make(chan Commitable), nil
+// ----------------------------------------------------------------------------
+func (stream FileStream) GetReadStream(ctx context.Context) (<-chan Commitable, error) {
+	return stream.readStream, nil
 }
 
-func (s FileStream) GetWriteStream(ctx context.Context) (chan<- Commitable, error) {
-	return make(chan Commitable), nil
+// ----------------------------------------------------------------------------
+func (stream FileStream) GetWriteStream(ctx context.Context) (chan<- Commitable, error) {
+	return stream.writeStream, nil
+}
+
+// ----------------------------------------------------------------------------
+func (commitable RabbitmqCommitable) Commit(ctx context.Context) {
+	return
+}
+
+// ----------------------------------------------------------------------------
+func (commitable RabbitmqCommitable) Discard(ctx context.Context) {
+	return
+}
+
+// ----------------------------------------------------------------------------
+func (c RabbitmqCommitable) Retry(ctx context.Context) {
+	return
+}
+
+// ----------------------------------------------------------------------------
+func NewReadFileStream(filename string) (FileStream, error) {
+	// create a file to read from
+}
+
+// ----------------------------------------------------------------------------
+func NewWriteFileStream(filename string) (FileStream, error) {
+	// create a file to write to
 }
