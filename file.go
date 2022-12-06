@@ -11,41 +11,46 @@ import (
 
 type FileStream struct {
 	filename string
-	readStream    chan Commitable
-	writeStream   chan Commitable
+	inputChannel    chan Commitable
+	outputChannel   chan Commitable
+}
+
+type FileCommitable struct {
+	record   szrecord.Record
+}
+
+
+// ----------------------------------------------------------------------------
+func (stream FileStream) GetInputChannel(ctx context.Context) (chan Commitable, error) {
+	return stream.inputChannel, nil
 }
 
 // ----------------------------------------------------------------------------
-func (stream FileStream) GetReadStream(ctx context.Context) (<-chan Commitable, error) {
-	return stream.readStream, nil
+func (stream FileStream) GetOutputChannel(ctx context.Context) (chan Commitable, error) {
+	return stream.outputChannel, nil
 }
 
 // ----------------------------------------------------------------------------
-func (stream FileStream) GetWriteStream(ctx context.Context) (chan<- Commitable, error) {
-	return stream.writeStream, nil
-}
-
-// ----------------------------------------------------------------------------
-func (commitable RabbitmqCommitable) Commit(ctx context.Context) {
+func (commitable FileCommitable) Commit(ctx context.Context) {
 	return
 }
 
 // ----------------------------------------------------------------------------
-func (commitable RabbitmqCommitable) Discard(ctx context.Context) {
+func (commitable FileCommitable) Discard(ctx context.Context) {
 	return
 }
 
 // ----------------------------------------------------------------------------
-func (c RabbitmqCommitable) Retry(ctx context.Context) {
+func (c FileCommitable) Retry(ctx context.Context) {
 	return
 }
 
-// ----------------------------------------------------------------------------
-func NewReadFileStream(filename string) (FileStream, error) {
-	// create a file to read from
-}
+// // ----------------------------------------------------------------------------
+// func NewReadFileStream(filename string) (FileStream, error) {
+// 	// create a file to read from
+// }
 
-// ----------------------------------------------------------------------------
-func NewWriteFileStream(filename string) (FileStream, error) {
-	// create a file to write to
-}
+// // ----------------------------------------------------------------------------
+// func NewWriteFileStream(filename string) (FileStream, error) {
+// 	// create a file to write to
+// }

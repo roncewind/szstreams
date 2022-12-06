@@ -15,8 +15,8 @@ type RabbitmqStream struct {
 	exchange      string
 	inputQ        string
 	outputQ       string
-	readStream    chan Commitable
-	writeStream   chan Commitable
+	inputChannel    chan Commitable
+	outputChannel   chan Commitable
 }
 
 type RabbitmqCommitable struct {
@@ -25,13 +25,13 @@ type RabbitmqCommitable struct {
 }
 
 // ----------------------------------------------------------------------------
-func (stream RabbitmqStream) GetReadStream(ctx context.Context) (<-chan Commitable, error) {
-	return stream.readStream, nil
+func (stream RabbitmqStream) GetInputChannel(ctx context.Context) (chan Commitable, error) {
+	return stream.inputChannel, nil
 }
 
 // ----------------------------------------------------------------------------
-func (stream RabbitmqStream) GetWriteStream(ctx context.Context) (chan<- Commitable, error) {
-	return stream.writeStream, nil
+func (stream RabbitmqStream) GetOutputChannel(ctx context.Context) (chan Commitable, error) {
+	return stream.outputChannel, nil
 }
 
 // ----------------------------------------------------------------------------

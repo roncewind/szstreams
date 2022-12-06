@@ -7,12 +7,14 @@ import (
 	"context"
 )
 
-type StreamReader interface {
-	GetReadStream(context.Context) (<-chan Commitable, error)
+type OperationFunction func(*Worker, context.Context) (bool, error)
+
+type ChannelInput interface {
+	GetInputChannel(context.Context) (chan Commitable, error)
 }
 
-type StreamWriter interface {
-	GetWriteStream(context.Context) (chan<- Commitable, error)
+type ChannelOutput interface {
+	GetOutputChannel(context.Context) (chan Commitable, error)
 }
 
 type Commitable interface {
@@ -20,42 +22,6 @@ type Commitable interface {
 	Commit(context.Context)
 	Discard(context.Context)
 	Retry(context.Context)
-}
-
-type Opfunc func(*Worker, context.Context) (bool, error)
-
-type Worker struct { //Name?
-	In       <-chan Commitable
-	Out      chan<- Commitable
-	Operator Opfunc
-}
-
-// ----------------------------------------------------------------------------
-func (worker Worker) GetReadStream(context.Context) (<-chan Commitable, error) {
-	return worker.In
-}
-
-// ----------------------------------------------------------------------------
-func (worker Worker) GetWriteStream(context.Context) (chan<- Commitable, error) {
-	return worker.Out
-}
-
-// ----------------------------------------------------------------------------
-// no-op operator
-func noopOperator(worker *Worker, ctx context.Context) (bool, error) {
-	var c Commitable = <-worker.In
-	worker.Out <- c
-	return true, nil
-}
-
-// ----------------------------------------------------------------------------
-func doSomething() {
-	w := &Worker{
-		In:       make(chan Commitable),
-		Out:      make(chan Commitable),
-		Operator: noopOperator,
-	}
-	w.Operator(w, context.TODO())
 }
 
 // func doASenzingSomething() {
