@@ -7,8 +7,6 @@ import (
 	"context"
 )
 
-type OperationFunction func(*Worker, context.Context) (bool, error)
-
 type ChannelInput interface {
 	GetInputChannel(context.Context) (chan Commitable, error)
 }

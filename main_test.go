@@ -14,9 +14,11 @@ import (
 
 const taskCount = 500000
 
+type OperationFunction func(*Worker, context.Context) (bool, error)
+
 type Worker struct { //Name?
-	Input       chan Commitable
-	Output      chan Commitable
+	Input   chan Commitable
+	Output  chan Commitable
 	Execute OperationFunction
 }
 
@@ -111,16 +113,16 @@ func TestSomething(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	// forever := make(chan bool)
 	source := &Worker{
-		Input: nil,
-		Output: make(chan Commitable, 100),
+		Input:   nil,
+		Output:  make(chan Commitable, 100),
 		Execute: sourceOperator,
 	}
 	go source.Execute(source, ctx)
 	go source.Execute(source, ctx)
 	sourceOutputChannel, _ := source.GetOutputChannel(ctx)
 	worker := &Worker{
-		Input:       sourceOutputChannel,
-		Output:      make(chan Commitable, 100),
+		Input:   sourceOutputChannel,
+		Output:  make(chan Commitable, 100),
 		Execute: noopOperator,
 	}
 	go worker.Execute(worker, ctx)
@@ -139,8 +141,8 @@ func TestSomething(t *testing.T) {
 	// go worker2.Execute(worker2, ctx)
 	// worker2OutputChannnel, _ := worker.GetOutputChannel(ctx)
 	sink := &Worker{
-		Input: workerOutputChannnel,
-		Output: nil,
+		Input:   workerOutputChannnel,
+		Output:  nil,
 		Execute: sinkOperator,
 	}
 	// go sink.Execute(sink, ctx)
@@ -172,4 +174,3 @@ func TestSomething(t *testing.T) {
 	}
 	// <- forever
 }
-
